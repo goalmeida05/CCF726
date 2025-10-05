@@ -55,7 +55,7 @@ O módulo `calc_properties_training()` computa descritores a partir de cada sequ
 - **Estequiometria elementar**: somatórios de **C/H/N/O/S** por sequência via `aminos_dict`, ajuste de terminais e **proporções relativas**.  
 - **Tripeptídeos**: frequência normalizada para 20³ combinações.  
 - **Normalizações adicionais (min–max)**: para peso, pI, carga e GRAVY (faixas pré-calculadas no código).  
-- **K-Spaced Amino Acid Group Pairs (KSAAGP, k=1)**: pares de grupos de aminoácidos (`amino_acid_groups`) espaçados por um resíduo; cada par é **normalizado por comprimento**.
+- **K-Spaced Amino Acid Group Pairs (KSAAGP, k=1)**: pares de grupos de aminoácidos (`amino_acid_groups`) espaçados por um resíduo.
 
 **Observações de implementação**
 - Sequências contendo caracteres indesejados `{ '(', '*', '-', 'X', 'O', 'U', 'Z', 'B', 'J', 'u' }` são descartadas.  
@@ -67,9 +67,9 @@ O módulo `calc_properties_training()` computa descritores a partir de cada sequ
 O módulo `mann_whitney_screen_csv()` executa:
 
 - **Entrada**: um `.csv` gerado com **1ª coluna = `seq`** e **última = `label`**.  
-- **Para cada feature** `X_j`, calcula-se o **MWU** (SciPy) entre os valores de `X_j` para `label=0` vs `label=1`, com hipótese **bicaudal** (`alternative='two-sided'`).  
+- **Para cada feature** `X_j`, calcula-se o **MWU** (SciPy) entre os valores de `X_j` para `label=0` vs `label=1`, com hipótese **bicaudal** (preferi seguir esse caminho pois testa se as distribuições de grupo 0 e grupo 1 são diferentes em qualquer direção maior ou menor).  
 - **Critério de seleção**: `p < 0,05`.  
-- **Checkpoint**: a cada **100** *features* o dicionário parcial é salvo em `significant_features_checkpoint.csv` (útil quando há quedas de energia/reinicializações).  
+- **Checkpoint**: a cada **100** *features* o dicionário parcial é salvo em `significant_features_checkpoint.csv` (Utilizei por conta das quedas de energia no servidor do lab).  
 - **Saídas**:
   - `significant_features.txt` — **apenas os nomes** das *features* com `p < 0,05`.  
   - `significant_features_final.csv` — estatísticas por *feature* (medianas por grupo + p-value).
@@ -142,17 +142,18 @@ res = mann_whitney_screen_csv(caminho)
 ```
 .
 ├── CD08/
-│   ├── cpps-toxic_trained_matrix-pos2772-neg2772.csv
-│   ├── test.fasta                 # ainda não utilizado
+│   ├── cpps-toxic_trained_matrix-pos2772-neg2772.csv <- precisei retirar do caminho do github pois o arquivo excede o tamanho permitido
+│   ├── test.fasta                 
 │   ├── train-positives.fasta
 │   └── train-negatives.fasta
 ├── CD09/
-│   ├── cpps-toxic_trained_matrix-pos3528-neg3528.csv
+│   ├── cpps-toxic_trained_matrix-pos3528-neg3528.csv <- precisei retirar do caminho do github pois o arquivo excede o tamanho permitido
 │   ├── test.fasta                 # ainda não utilizado
 │   ├── train-positives.fasta
 │   └── train-negatives.fasta
 ├── significant_features_final.csv
-├── analise.py                     # principal: descritores (base PERSEUcpp) + MWU
-├── PERSEUcpp.py                   # modelo base do artigo inicial (não usado na análise)
+├── analise.py                     # principal: calculo descritores (base PERSEUcpp) + MWU
+├── PERSEUcpp.py                   # modelo base do meu artigo inicial (não usado na análise)
 └── README.md
 ```
+
